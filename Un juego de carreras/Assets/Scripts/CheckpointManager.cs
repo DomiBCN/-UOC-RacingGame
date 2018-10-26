@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 public class CheckpointManager : MonoBehaviour
 {
-
+    
     public List<GameObject> checkpoints;
     public int nextCheckpoint = 0;
     public int currentLap = 1;
-    int countDown = 5;
+    int countDown = 45;
     public Text countDownText;
 
     public delegate void GameOver(GameObject car);

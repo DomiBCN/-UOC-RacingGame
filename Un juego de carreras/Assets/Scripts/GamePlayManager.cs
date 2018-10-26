@@ -9,19 +9,28 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField]
     Text startText;
     [SerializeField]
+    GameObject replayBtn;
+    [SerializeField]
+    GameObject countDownTxt;
+    [SerializeField]
     List<GameObject> carsAI;
     [SerializeField]
     GameObject playerCar;
+    [SerializeField]
+    GameObject ghostCar;
 
     int countDown = 4;
     CarAIControl carCtrl;
     List<CarAIControl> carsAICtrl = new List<CarAIControl>();
     CarUserControl playerCarCtrl;
+    GhostControl ghostCarCtrl;
+    Time startTime;
 
     private void Awake()
     {
         playerCar.GetComponent<CheckpointManager>().gameOver += GameOver;
         playerCarCtrl = playerCar.GetComponent<CarUserControl>();
+        ghostCarCtrl = ghostCar.GetComponent<GhostControl>();
         foreach (var carAI in carsAI)
         {
             //carAI.GetComponent<CheckpointManager>().gameOver += GameOver;
@@ -29,33 +38,42 @@ public class GamePlayManager : MonoBehaviour
         }
     }
 
-    public void StartRace()
+    public void StartRace(bool replay)
     {
-        InvokeRepeating("StartCountDown", 0, 1);
+        replayBtn.SetActive(false);
+        StartCoroutine(StartCountDown(replay));
     }
 
-    void StartCountDown()
+    IEnumerator StartCountDown(bool replay)
     {
-        if (countDown == 1)
+        for (int i = 0; i < 4; i++)
         {
-            CancelInvoke();
-            startText.text = "GO!";
-            //START THE RACE
-            AwakeDrivers();
-        }
-        else
-        {
-            countDown--;
-            startText.text = countDown.ToString();
+            if (countDown == 1)
+            {
+                startText.text = "GO!";
+                countDownTxt.SetActive(true);
+                //START THE RACE
+                AwakeDrivers(replay);
+            }
+            else
+            {
+                countDown--;
+                startText.text = countDown.ToString();
+            }
+            yield return new WaitForSeconds(1);
         }
     }
 
-    void AwakeDrivers()
+    void AwakeDrivers(bool replay)
     {
         playerCar.GetComponent<CheckpointManager>().CountDownInit();
+        playerCarCtrl.replayRace = replay;
         playerCarCtrl.drive = true;
+        ghostCarCtrl.drive = true;
+        ghostCarCtrl.replayRace = replay;
         foreach (var carAI in carsAICtrl)
         {
+            carAI.replayRace = replay;
             carAI.m_Driving = true;
         }
         StartCoroutine("HideCountDown");
@@ -71,7 +89,24 @@ public class GamePlayManager : MonoBehaviour
     {
         if (car.tag == "Player")
         {
+            if (!playerCarCtrl.replayRace) playerCarCtrl.SaveRace();
+            playerCarCtrl.drive = false;
+            foreach (var carAI in carsAICtrl)
+            {
+                if (!carAI.replayRace) carAI.SaveRace();
+                carAI.m_Driving = false;
+            }
             print("Game Over");
+            Time.timeScale = 0;
+        }
+        else
+        {
+            var cAI = carsAICtrl.Find(c => c.name == car.name);
+            if (cAI != null)
+            {
+                cAI.SaveRace();
+            }
+
             Destroy(car);
         }
     }
