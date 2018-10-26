@@ -33,7 +33,7 @@ public class Checkpoint : MonoBehaviour {
             {
                 checkManager.nextCheckpoint = 0;
             }
-            checkManager.UpdateSeconds(7);
+            checkManager.UpdateSeconds(10);
             UpdateCheckpoint(transform, false);
             UpdateCheckpoint(checkManager.checkpoints[checkManager.nextCheckpoint].transform, true);
         }

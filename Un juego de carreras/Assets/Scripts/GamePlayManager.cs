@@ -13,6 +13,8 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField]
     GameObject countDownTxt;
     [SerializeField]
+    GameObject miniMap;
+    [SerializeField]
     List<GameObject> carsAI;
     [SerializeField]
     GameObject playerCar;
@@ -66,6 +68,7 @@ public class GamePlayManager : MonoBehaviour
 
     void AwakeDrivers(bool replay)
     {
+        miniMap.SetActive(true);
         playerCar.GetComponent<CheckpointManager>().CountDownInit();
         playerCarCtrl.replayRace = replay;
         playerCarCtrl.drive = true;
