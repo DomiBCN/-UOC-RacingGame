@@ -381,6 +381,7 @@ namespace UnityStandardAssets.Vehicles.Car
             InvokeRepeating("AddCarPosition", 0, 0.02f);
         }
 
+        //we retrieve certain data every few seconds(0.02) in order to have an accurate replay
         void AddCarPosition()
         {
             carTransforms.Add(new RacingData.CarStatus()
@@ -391,8 +392,8 @@ namespace UnityStandardAssets.Vehicles.Car
                 WheelBackRight = MapToObjectTransform(m_WheelMeshes[2].transform),
                 WheelBackLeft = MapToObjectTransform(m_WheelMeshes[3].transform),
                 Camera = gameObject.tag == "Player" ? MapToObjectTransform(Camera.main.transform) : new RacingData.ObjectTransform(),
-                AccelInput = gameObject.tag != "Ghost" ? AccelInput : 0,
-                Revs = gameObject.tag != "Ghost" ? Revs : 0
+                AccelInput = gameObject.tag != "Ghost" ? AccelInput : 0,//this data helps use to reproduce the sound in the replay
+                Revs = gameObject.tag != "Ghost" ? Revs : 0//this data helps use to reproduce the sound in the replay
             });
         }
 
@@ -424,10 +425,12 @@ namespace UnityStandardAssets.Vehicles.Car
             InvokeRepeating("UpdateCarPosition", 0, 0.02f);
         }
 
+        //manually updates car and camera transforms every 0.02 seconds, using recorded data in the last play
         void UpdateCarPosition()
         {
             if (counter < carReplay.carMovement.Count)
             {
+                //we just want to update the camera transform if this is the controller used by our player car
                 if (gameObject.tag == "Player")
                 {
                     Camera.main.transform.position = carReplay.carMovement[counter].Camera.position;
@@ -438,6 +441,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 transform.rotation = carReplay.carMovement[counter].Car.rotation;
                 transform.localScale = carReplay.carMovement[counter].Car.localScale;
 
+                //if this is the ghost car controller we don't want any sound
                 if (gameObject.tag != "Ghost")
                 {
                     AccelInput = carReplay.carMovement[counter].AccelInput;

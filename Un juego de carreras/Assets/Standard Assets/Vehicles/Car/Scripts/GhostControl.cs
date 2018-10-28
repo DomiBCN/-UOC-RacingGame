@@ -22,6 +22,7 @@ public class GhostControl : MonoBehaviour
         // get the car controller
         m_Car = GetComponent<CarController>();
         raceData = RacingPersistence.LoadRaceData("bestRace");
+        if (raceData.carMovement == null) gameObject.SetActive(false);
     }
 
     private void FixedUpdate()

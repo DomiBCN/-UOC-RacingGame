@@ -70,6 +70,14 @@ namespace UnityStandardAssets.Vehicles.Car
             m_StartedSound = true;
         }
 
+        public void PauseSound(bool enabled)
+        {
+            //Pause all audio sources on this object:
+            foreach (var source in GetComponents<AudioSource>())
+            {
+                source.enabled = enabled;
+            }
+        }
 
         private void StopSound()
         {

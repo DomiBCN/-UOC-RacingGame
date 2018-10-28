@@ -37,12 +37,12 @@ namespace UnityStandardAssets.Vehicles.Car
                 if (!replayRace)
                 {
                     time += Time.deltaTime;
-                    // pass the input to the car!
                     float h = CrossPlatformInputManager.GetAxis("Horizontal");
                     float v = CrossPlatformInputManager.GetAxis("Vertical");
 #if !MOBILE_INPUT
                     float handbrake = CrossPlatformInputManager.GetAxis("Jump");
                    
+                    //if we are not in replay mode, start recording player data
                     if (!recording)
                     {
                         recording = true;
@@ -56,6 +56,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 }
                 else
                 {
+                    //if we haven't started the replay yet, start it
                     if (!replaying)
                     {
                         replaying = true;
@@ -68,6 +69,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public void SaveRace()
         {
             m_Car.SaveRace(time, gameObject.name);
+            //check if this race has been the best one, if positive, update the preovious one with this race
             if (RacingPersistence.CheckIfFileExists("bestRace"))
             {
                 if (bestRaceData.Time < time)
